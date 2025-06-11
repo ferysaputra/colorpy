@@ -44,8 +44,6 @@ while True:
     if key == 27:
         break
     
-    #print(pixel_center)
-    #cv2.circle(frame, (cx, cy), 5, (255, 0, 0), 3)
 
 cap.release()
 

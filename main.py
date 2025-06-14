@@ -1,11 +1,12 @@
 import cv2
 import numpy as np
 
-# Open webcam
+#webcam video source
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
+#definisi warna dari nilai hsv
 def get_color_name(h, s, v):
     if s < 50 and v > 200:
         return "WHITE"
@@ -38,23 +39,29 @@ while True:
 
     hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     height, width, _ = frame.shape
-    cx = int(width / 2)
-    cy = int(height / 2)
 
-    pixel_center = hsv_frame[cy, cx]
-    h, s, v = int(pixel_center[0]), int(pixel_center[1]), int(pixel_center[2])
-    color = get_color_name(h, s, v)
+    # Koordinat 3 titik: kiri, tengah, kanan
+    positions = [
+        (int(width * 0.25), int(height / 2)),
+        (int(width * 0.50), int(height / 2)),
+        (int(width * 0.75), int(height / 2)),
+    ]
 
-    bgr_color = frame[cy, cx]
-    b, g, r = int(bgr_color[0]), int(bgr_color[1]), int(bgr_color[2])
+    for i, (cx, cy) in enumerate(positions):
+        hsv_pixel = hsv_frame[cy, cx]
+        h, s, v = int(hsv_pixel[0]), int(hsv_pixel[1]), int(hsv_pixel[2])
+        color_name = get_color_name(h, s, v)
 
-    cv2.rectangle(frame, (cx - 220, 10), (cx + 200, 120), (255, 255, 255), -1)
-    cv2.putText(frame, color, (cx - 200, 100), 0, 3, (b, g, r), 5)
-    cv2.circle(frame, (cx, cy), 5, (25, 25, 25), 3)
+        bgr_pixel = frame[cy, cx]
+        b, g, r = int(bgr_pixel[0]), int(bgr_pixel[1]), int(bgr_pixel[2])
 
-    cv2.imshow("Frame", frame)
-    key = cv2.waitKey(1)
-    if key == 27:
+        # Gambar lingkaran dan label warna
+        cv2.circle(frame, (cx, cy), 5, (25, 25, 25), 3)
+        cv2.rectangle(frame, (cx - 100, 10), (cx + 100, 60), (255, 255, 255), -1)
+        cv2.putText(frame, color_name, (cx - 90, 50), 0, 1.5, (b, g, r), 3)
+
+    cv2.imshow("Multi Color Detection", frame)
+    if cv2.waitKey(1) == 27:
         break
 
 cap.release()

@@ -1,6 +1,9 @@
+# tambah simpan otomatis hasil warna ke csv
 import cv2
 import numpy as np
 import time
+import csv
+from datetime import datetime
 
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
@@ -15,6 +18,13 @@ hue_history = []
 history_duration = 3  # dalam detik
 last_save_time = 0
 significant_diff = 15  # ambang batas perubahan H yang signifikan
+
+# File CSV untuk menyimpan warna
+date_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+csv_file_path = f"saved_colors_{date_str}.csv"
+with open(csv_file_path, mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(["Color", "H", "S", "V", "Timestamp"])
 
 
 def get_color_name(h, s, v):
@@ -40,6 +50,14 @@ def get_color_name(h, s, v):
         return "PINK"
     else:
         return "UNDEFINED"
+
+
+def save_color(color_name, h, s, v):
+    timestamp = datetime.now().strftime("%H:%M:%S %A %d-%m-%Y")
+    saved_colors.append((color_name, h, s, v, timestamp))
+    with open(csv_file_path, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([color_name, h, s, v, timestamp])
 
 
 def mouse_move(event, x, y, flags, param):
@@ -70,28 +88,25 @@ while True:
     # Tambahkan hue ke riwayat dengan timestamp
     current_time = time.time()
     hue_history.append((current_time, h_mean))
-
-    # Buang data lama di luar durasi 3 detik
     hue_history = [(t, h) for (t, h) in hue_history if current_time - t <= history_duration]
 
-    # Cek perubahan signifikan dan simpan otomatis jika perlu
     if hue_history:
         h_values = [h for (_, h) in hue_history]
         h_min, h_max = min(h_values), max(h_values)
         if abs(h_mean - h_min) > significant_diff or abs(h_mean - h_max) > significant_diff:
-            if current_time - last_save_time > 1:  # agar tidak terlalu sering menyimpan
-                saved_colors.append((color_name, h_mean, s_mean, v_mean))
+            if current_time - last_save_time > 1:
+                save_color(color_name, h_mean, s_mean, v_mean)
                 last_save_time = current_time
-                hue_history = []  # reset untuk deteksi perubahan berikutnya
+                hue_history = []
 
     # Gambar kotak dan label warna
     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-    cv2.rectangle(frame, (10, 10), (310, 60), (255, 255, 255), -1)
+    cv2.rectangle(frame, (10, 10), (410, 60), (255, 255, 255), -1)
     cv2.putText(frame, f"{color_name} HSV({h_mean},{s_mean},{v_mean})", (15, 45), 0, 1.2, (0, 0, 0), 2)
 
     # Tampilkan daftar warna tersimpan
-    for i, (name, h, s, v) in enumerate(saved_colors[-10:]):
-        cv2.putText(frame, f"{name} HSV({h},{s},{v})", (15, 80 + i * 30), 0, 0.8, (0, 0, 0), 1)
+    for i, (name, h, s, v, timestamp) in enumerate(saved_colors[-10:]):
+        cv2.putText(frame, f"{name} HSV({h},{s},{v}) {timestamp}", (15, 80 + i * 30), 0, 0.6, (0, 0, 0), 1)
 
     cv2.imshow("Color Detection", frame)
     key = cv2.waitKey(1) & 0xFF
@@ -99,7 +114,7 @@ while True:
     if key == 27:
         break
     elif key == ord('s'):
-        saved_colors.append((color_name, h_mean, s_mean, v_mean))
+        save_color(color_name, h_mean, s_mean, v_mean)
 
 cap.release()
 cv2.destroyAllWindows()

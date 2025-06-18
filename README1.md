@@ -1,2 +1,0 @@
-# colorpy
-python project

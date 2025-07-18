@@ -7,17 +7,17 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Konfigurasi server dan akun
-nx_host = "https://192.168.1.66:7001"
+nx_host = "https://192.168.0.4:7001"
 username = "admin"
-password = "vvtk3454"  # pastikan tidak salah!
+password = "Invision123"  # pastikan tidak salah!
 
 # Payload JSON event
 payload = {
-    "caption": "Trigger dari Python",
-    "description": "Tes kirim event ke Nx Witness",
-    "eventType": "customPluginEvent",
-    "sourceId": "python-script",
-    "metadata": ""
+    "timestamp": 0,
+    "name": "ESP32 Gate Opened",
+    "source": "ESP32",
+    "caption": "Gate Triggered",
+    "description": "Barrier gate dibuka oleh ESP32"
 }
 
 # Kirim request
@@ -33,3 +33,4 @@ try:
     print("Response:", response.text)
 except Exception as e:
     print("Error:", e)
+

@@ -4,10 +4,10 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # ====== KONFIGURASI SERVER NX WITNESS ======
-NX_SERVER = 'https://192.168.0.4:7001'  # Ganti dengan IP server kamu
+NX_SERVER = 'https://192.168.0.4:7001'  
 USERNAME = 'admin'
 PASSWORD = 'Invision123'
-CAMERA_ID = '8bf3f8a8-dccd-21c8-3f76-a0f72fb4a6de'  # Dapatkan dari /ec2/getCamerasEx atau Nx Client
+CAMERA_ID = '8bf3f8a8-dccd-21c8-3f76-a0f72fb4a6de'  
 
 # ====== DATA EVENT YANG DIKIRIM ======
 SOURCE = 'Barcode Scanner Sim'

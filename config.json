@@ -1,6 +1,6 @@
 {
-  "nx_server_ip": "192.168.1.100",
+  "nx_server_ip": "https://192.168.0.4:7001",
   "username": "admin",
-  "password": "yourpassword",
-  "camera_id": "49c76a0d-e444-1b56-e743-5f799198c3a2"
+  "password": "Invision123",
+  "camera_id": "8bf3f8a8-dccd-21c8-3f76-a0f72fb4a6de"
 }
